@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>В школу / Домой — СПб</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f5f7fa;
+      padding: 15px;
+      color: #2c3e50;
+    }
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin: 15px 0 25px;
+    }
+    h1 {
+      font-size: 1.6em;
+      color: #1a237e;
+      margin: 0;
+    }
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 24px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    .section-title {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0e0e0;
+      color: #1a237e;
+    }
+    .school .section-title { color: #2e7d32; border-bottom-color: #a5d6a7; }
+    .home .section-title { color: #d32f2f; border-bottom-color: #ffcdd2; }
+
+    .card {
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border-left: 4px solid #1a237e;
+    }
+    .school .card { border-left-color: #2e7d32; }
+    .home .card { border-left-color: #d32f2f; }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .vehicle {
+      font-weight: bold;
+    }
+    .route-badge {
+      background: #e8eaf6;
+      color: #303f9f;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+    .school .route-badge {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .home .route-badge {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .stop-name {
+      font-size: 0.95em;
+      color: #546e7a;
+      margin-bottom: 10px;
+    }
+    .time {
+      font-size: 1.6em;
+      font-weight: bold;
+    }
+    .minutes {
+      font-size: 0.95em;
+      color: #666;
+    }
+    .no-data {
+      color: #999;
+    }
+    .loading, .error {
+      text-align: center;
+      padding: 30px 0;
+      color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚌 Маршруты</h1>
+    </header>
+
+    <div id="school" class="section school">
+      <div class="section-title">🏫 В школу</div>
+      <div class="cards"></div>
+    </div>
+
+    <div id="home" class="section home">
+      <div class="section-title">🏠 Домой</div>
+      <div class="cards"></div>
+    </div>
+  </div>
+
+  <script>
+    async function update() {
+      try {
+        const res = await fetch('/api/all');
+        if (!res.ok) throw new Error('Сервер не отвечает');
+        const data = await res.json();
+
+        const schoolCards = document.querySelector('#school .cards');
+        const homeCards = document.querySelector('#home .cards');
+
+        schoolCards.innerHTML = '';
+        homeCards.innerHTML = '';
+
+        data.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          const vehicleEmoji = item.vehicle === 'Трамвай' ? '🚋' : '🚌';
+          const timeDisplay = item.next
+            ? `<div class="time">${item.next.arrival_time}</div><div class="minutes">через ${item.next.minutes} мин</div>`
+            : `<div class="time no-data">—</div><div class="minutes">Нет данных</div>`;
+
+          card.innerHTML = `
+            <div class="header">
+              <div class="vehicle">${vehicleEmoji} ${item.vehicle} ${item.route}</div>
+              <div class="route-badge">${item.route}</div>
+            </div>
+            <div class="stop-name">${item.stop_name}</div>
+            ${timeDisplay}
+          `;
+
+          if (item.direction === 'school') {
+            schoolCards.appendChild(card);
+          } else if (item.direction === 'home') {
+            homeCards.appendChild(card);
+          }
+        });
+
+      } catch (e) {
+        document.body.innerHTML = `<div class="error">❌ Ошибка: проверьте сервер и интернет</div>`;
+        console.error(e);
+      }
+    }
+
+    update();
+    setInterval(update, 30000);
+  </script>
+</body>
+</html>

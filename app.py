@@ -2,7 +2,7 @@
 import os
 from flask import Flask, jsonify, send_from_directory
 import urllib.request
-import gtfs_realtime_pb2
+from google.transit import gtfs_realtime_pb2
 from datetime import datetime
 import pytz
 

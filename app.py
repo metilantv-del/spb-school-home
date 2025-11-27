@@ -12,7 +12,7 @@ STOPS_CONFIG = [
     {"name": "Замшина улица", "stop_id": "18872", "route_id": "295", "vehicle": "Автобус", "direction": "home"},
 ]
 
-GTFS_RT_URL = "https://transport.orgp.spb.ru/gtfs-rt/trip_updates.pb"
+GTFS_RT_URL = "https://spb-transport.xyz/gtfs-rt"
 TIMEZONE = pytz.timezone("Europe/Moscow")
 
 app = Flask(__name__, static_folder='.')

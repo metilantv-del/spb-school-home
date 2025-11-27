@@ -1,8 +1,7 @@
-# app.py
 import os
 from flask import Flask, jsonify, send_from_directory
 import urllib.request
-from google.transit import gtfs_realtime_pb2
+from google.transit import gtfs_realtime_pb2  # ✅ ПРАВИЛЬНЫЙ ИМПОРТ
 from datetime import datetime
 import pytz
 
